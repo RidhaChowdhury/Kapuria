@@ -1,13 +1,6 @@
-import {
-  NavigationMenu,
-  NavigationMenuContent,
-  NavigationMenuItem,
-  NavigationMenuList,
-  NavigationMenuTrigger,
-} from "@/components/base-ui/navigation-menu";
-import * as React from "react";
-import ProductListing from "@/components/ProductListing";
+import React from "react";
 import { ChevronRight } from "lucide-react";
+import ProductListing from "@/components/ProductListing";
 
 interface ProductProps {
   primaryImage: string;
@@ -30,68 +23,67 @@ interface NavigationMenuDemoProps {
 
 function NavigationMenuDemo({ data }: NavigationMenuDemoProps) {
   return (
-    <NavigationMenu>
-      <NavigationMenuList>
+    <nav className="w-full">
+      <ul className="flex justify-around gap-4 px-4">
         {Object.entries(data).map(([section, content], sectionIndex) => (
-          <NavigationMenuItem key={sectionIndex}>
-            <NavigationMenuTrigger>{section}</NavigationMenuTrigger>
-            <NavigationMenuContent>
-              <div className="flex flex-col gap-4 p-4 sm:flex-row">
-                {/* Left Column: Category Lists */}
-                <div className="flex flex-col gap-4 sm:w-1/2">
-                  {Object.entries(content.categories).map(
-                    ([header, items], headerIndex) => (
-                      <div
-                        key={headerIndex}
-                        className="flex flex-col whitespace-nowrap"
-                      >
-                        <a
-                          href="#"
-                          className="flex flex-row items-center text-black bg-gradient-to-r from-purple-400 to-pink-600 bg-clip-text transition-all duration-500 hover:text-transparent hover:opacity-100"
-                        >
-                          <span className="flex items-center">{header}</span>
-                          <ChevronRight
-                            size={18}
-                            className="mt-1 transition-all duration-500 ease-in-out opacity-100 hover:opacity-0"
-                          />
-                        </a>
+          <li key={sectionIndex} className="relative group">
+            <button className="text-lg font-semibold hover:text-purple-500">
+              {section}
+            </button>
 
-                        <div className="flex flex-col gap-2 sm:gap-4 mt-2">
-                          {items.map((item, itemIndex) => (
-                            <a
-                              key={itemIndex}
-                              href="#"
-                              className="ml-2 text-gray-600 hover:text-gray-900"
-                            >
-                              {item}
-                            </a>
-                          ))}
+            {/* Dropdown Content */}
+            <div className="fixed left-0 right-0 top-24 bg-white shadow-lg py-8 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
+              <div className="flex justify-center">
+                <div className="flex gap-12 px-8 max-w-7xl w-full">
+                  {/* Left Column: Categories */}
+                  <div className="grid grid-cols-2 gap-8 w-1/2">
+                    {Object.entries(content.categories).map(
+                      ([header, items], headerIndex) => (
+                        <div key={headerIndex}>
+                          <a
+                            href="#"
+                            className="text-md font-semibold text-gray-900 hover:text-purple-500 flex items-center gap-2"
+                          >
+                            {header} <ChevronRight size={18} />
+                          </a>
+                          <ul className="mt-2 space-y-2">
+                            {items.map((item, itemIndex) => (
+                              <li key={itemIndex}>
+                                <a
+                                  href="#"
+                                  className="text-gray-600 hover:text-gray-900"
+                                >
+                                  {item}
+                                </a>
+                              </li>
+                            ))}
+                          </ul>
                         </div>
-                      </div>
-                    )
-                  )}
-                </div>
+                      )
+                    )}
+                  </div>
 
-                {/* Right Column: Product Listings (Hidden on mobile) */}
-                <div className="hidden sm:flex flex-row gap-4 sm:w-1/2">
-                  {content.products?.map((product, productIndex) => (
-                    <ProductListing
-                      key={productIndex}
-                      primaryImage={product.primaryImage}
-                      secondaryImage={product.secondaryImage}
-                      designerName={product.designerName}
-                      productName={product.productName}
-                      price={product.price}
-                      className="w-24 sm:w-32"
-                    />
-                  ))}
+                  {/* Right Column: Product Listings */}
+                  <div className="flex flex-wrap gap-4 w-1/2">
+                    {content.products?.map((product, productIndex) => (
+                      <ProductListing
+                        key={productIndex}
+                        primaryImage={product.primaryImage}
+                        secondaryImage={product.secondaryImage}
+                        designerName={product.designerName}
+                        productName={product.productName}
+                        price={product.price}
+                        className="w-1/4"
+                      />
+                    ))}
+                  </div>
                 </div>
               </div>
-            </NavigationMenuContent>
-          </NavigationMenuItem>
+            </div>
+          </li>
         ))}
-      </NavigationMenuList>
-    </NavigationMenu>
+      </ul>
+    </nav>
   );
 }
 
