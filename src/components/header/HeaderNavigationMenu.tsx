@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { ChevronRight } from "lucide-react";
 import ProductListing from "@/components/ProductListing";
 
@@ -22,64 +22,90 @@ interface NavigationMenuDemoProps {
 }
 
 function NavigationMenuDemo({ data }: NavigationMenuDemoProps) {
+  const [activeSection, setActiveSection] = useState<string | null>(null);
+  const [isDropdownVisible, setIsDropdownVisible] = useState(false);
+
+  const handleMouseEnter = (section: string) => {
+    setActiveSection(section);
+    setIsDropdownVisible(true);
+  };
+
+  const handleMouseLeave = () => {
+    setIsDropdownVisible(false);
+    setActiveSection(null);
+  };
+
   return (
     <nav className="w-full">
-      <ul className="flex justify-around gap-4 px-4">
+      <ul className="flex justify-center">
         {Object.entries(data).map(([section, content], sectionIndex) => (
-          <li key={sectionIndex} className="relative group">
-            <button className="text-lg font-semibold hover:text-purple-500">
+          <li
+            key={sectionIndex}
+            className="group flex-1 flex justify-center items-center pb-4"
+            onMouseEnter={() => handleMouseEnter(section)}
+            onMouseLeave={handleMouseLeave}
+          >
+            <button
+              className={`text-lg font-semibold ${
+                isDropdownVisible && activeSection === section
+                  ? "text-purple-500"
+                  : ""
+              }`}
+            >
               {section}
             </button>
 
             {/* Dropdown Content */}
-            <div className="fixed left-0 right-0 top-24 bg-white shadow-lg py-8 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
-              <div className="flex justify-center">
-                <div className="flex gap-12 px-8 max-w-7xl w-full">
-                  {/* Left Column: Categories */}
-                  <div className="grid grid-cols-2 gap-8 w-1/2">
-                    {Object.entries(content.categories).map(
-                      ([header, items], headerIndex) => (
-                        <div key={headerIndex}>
-                          <a
-                            href="#"
-                            className="text-md font-semibold text-gray-900 hover:text-purple-500 flex items-center gap-2"
-                          >
-                            {header} <ChevronRight size={18} />
-                          </a>
-                          <ul className="mt-2 space-y-2">
-                            {items.map((item, itemIndex) => (
-                              <li key={itemIndex}>
-                                <a
-                                  href="#"
-                                  className="text-gray-600 hover:text-gray-900"
-                                >
-                                  {item}
-                                </a>
-                              </li>
-                            ))}
-                          </ul>
-                        </div>
-                      )
-                    )}
-                  </div>
+            {isDropdownVisible && activeSection === section && (
+              <div className="fixed left-0 right-0 top-24 bg-white shadow-lg py-8 z-10">
+                <div className="flex justify-center">
+                  <div className="flex gap-12 px-8 max-w-7xl w-full">
+                    {/* Left Column: Categories */}
+                    <div className="grid grid-cols-2 gap-8 w-1/2 ml-16">
+                      {Object.entries(content.categories).map(
+                        ([header, items], headerIndex) => (
+                          <div key={headerIndex}>
+                            <a
+                              href="#"
+                              className="font-semibold text-gray-900 hover:text-purple-500 flex items-center gap-2"
+                            >
+                              {header} <ChevronRight size={18} />
+                            </a>
+                            <ul className="mt-2">
+                              {items.map((item, itemIndex) => (
+                                <li key={itemIndex}>
+                                  <a
+                                    href="#"
+                                    className="text-gray-600 hover:text-gray-900"
+                                  >
+                                    {item}
+                                  </a>
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        )
+                      )}
+                    </div>
 
-                  {/* Right Column: Product Listings */}
-                  <div className="flex flex-wrap gap-4 w-1/2">
-                    {content.products?.map((product, productIndex) => (
-                      <ProductListing
-                        key={productIndex}
-                        primaryImage={product.primaryImage}
-                        secondaryImage={product.secondaryImage}
-                        designerName={product.designerName}
-                        productName={product.productName}
-                        price={product.price}
-                        className="w-1/4"
-                      />
-                    ))}
+                    {/* Right Column: Product Listings */}
+                    <div className="flex flex-wrap gap-4 w-1/2">
+                      {content.products?.map((product, productIndex) => (
+                        <ProductListing
+                          key={productIndex}
+                          primaryImage={product.primaryImage}
+                          secondaryImage={product.secondaryImage}
+                          designerName={product.designerName}
+                          productName={product.productName}
+                          price={product.price}
+                          className="w-1/4"
+                        />
+                      ))}
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
+            )}
           </li>
         ))}
       </ul>
@@ -118,6 +144,12 @@ const HeaderContentData: HeaderContent = {
     products: products,
   },
   Sale: {
+    categories: {
+      "Shop By Category": productCategories,
+    },
+    products: products,
+  },
+  Mens: {
     categories: {
       "Shop By Category": productCategories,
     },
